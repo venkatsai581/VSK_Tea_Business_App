@@ -1,4 +1,4 @@
-/* Pavan Tea - shared behaviour. Plain JavaScript, no libraries. */
+/* VSK Tea - shared behaviour. Plain JavaScript, no libraries. */
 (function () {
 	'use strict';
 

@@ -1,4 +1,4 @@
-# Pavan Tea - Business Project (Spring Boot + Thymeleaf)
+# VSK Tea - Business Project (Spring Boot + Thymeleaf)
 
 ## Run it
 Needs JDK 17+. 
