@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Something went wrong')}"></head>
+<body>
+	<header th:replace="~{fragments :: navbar('')}"></header>
+
+	<main class="container">
+		<div class="card success-card">
+			<div class="check" style="background:var(--danger-soft);color:var(--danger)"><i class="fa-solid fa-triangle-exclamation"></i></div>
+			<p class="eyebrow" th:text="${errorCode != null} ? ${errorCode} : ${status}">500</p>
+			<h1 style="font-size:1.8rem" th:text="${errorTitle != null} ? ${errorTitle} : 'Oops, something went wrong'">Oops, something went wrong</h1>
+			<p class="muted" th:text="${errorMessage != null} ? ${errorMessage} : 'We could not complete that request. Please go back and try again.'">Please try again.</p>
+			<div class="form-actions" style="justify-content:center">
+				<a class="btn" th:href="@{/home}" href="/home"><i class="fa-solid fa-house"></i> Home</a>
+				<a class="btn btn-ghost" href="javascript:history.back()">Go back</a>
+			</div>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments :: footer}"></footer>
+	<th:block th:replace="~{fragments :: foot}"></th:block>
+</body>
+</html>

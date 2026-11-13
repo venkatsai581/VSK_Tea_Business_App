@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Log in')}"></head>
+<body>
+	<header th:replace="~{fragments :: navbar('login')}"></header>
+
+	<main class="container auth">
+		<div class="card auth-card card-pad">
+			<h1 style="font-size:1.8rem;text-align:center">Welcome back</h1>
+			<p class="muted center">Log in to order tea or manage the business.</p>
+
+			<div class="tabs" role="tablist" data-tabs aria-label="Login type">
+				<button type="button" role="tab" id="tab-user" aria-controls="panel-user" th:attr="aria-selected=${tab == 'user'}"><i class="fa-solid fa-user"></i> Customer</button>
+				<button type="button" role="tab" id="tab-admin" aria-controls="panel-admin" th:attr="aria-selected=${tab == 'admin'}"><i class="fa-solid fa-user-shield"></i> Admin</button>
+			</div>
+
+			<!-- Customer login -->
+			<section class="tab-panel" id="panel-user" role="tabpanel" aria-labelledby="tab-user">
+				<form th:action="@{/login/user}" th:object="${userForm}" method="post" action="/login/user" novalidate>
+					<div class="alert alert-error" th:if="${userError}"><i class="fa-solid fa-circle-exclamation"></i> <span th:text="${userError}"></span></div>
+					<div class="field">
+						<label for="user-email">Email</label>
+						<input type="email" id="user-email" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'invalid'" placeholder="you@example.com" autocomplete="username" required />
+						<span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+					</div>
+					<div class="field">
+						<label for="user-password">Password</label>
+						<div class="password-wrap">
+							<input type="password" id="user-password" th:field="*{password}" th:classappend="${#fields.hasErrors('password')} ? 'invalid'" placeholder="Your password" autocomplete="current-password" required />
+							<button type="button" data-toggle-password aria-label="Show password">Show</button>
+						</div>
+						<span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+					</div>
+					<button type="submit" class="btn btn-block">Log in</button>
+					<p class="center muted" style="margin:1rem 0 0">New here? <a th:href="@{/register}" href="/register">Create an account</a></p>
+				</form>
+			</section>
+
+			<!-- Admin login -->
+			<section class="tab-panel" id="panel-admin" role="tabpanel" aria-labelledby="tab-admin" hidden>
+				<form th:action="@{/login/admin}" th:object="${adminForm}" method="post" action="/login/admin" novalidate>
+					<div class="alert alert-error" th:if="${adminError}"><i class="fa-solid fa-circle-exclamation"></i> <span th:text="${adminError}"></span></div>
+					<div class="field">
+						<label for="admin-email">Admin email</label>
+						<input type="email" id="admin-email" th:field="*{email}" th:classappend="${#fields.hasErrors('email')} ? 'invalid'" placeholder="admin@example.com" autocomplete="username" required />
+						<span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+					</div>
+					<div class="field">
+						<label for="admin-password">Password</label>
+						<div class="password-wrap">
+							<input type="password" id="admin-password" th:field="*{password}" th:classappend="${#fields.hasErrors('password')} ? 'invalid'" placeholder="Your password" autocomplete="current-password" required />
+							<button type="button" data-toggle-password aria-label="Show password">Show</button>
+						</div>
+						<span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+					</div>
+					<button type="submit" class="btn btn-block">Log in as admin</button>
+				</form>
+			</section>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments :: footer}"></footer>
+	<th:block th:replace="~{fragments :: foot}"></th:block>
+</body>
+</html>

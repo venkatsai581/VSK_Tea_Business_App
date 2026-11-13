@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Locate us')}"></head>
+<body>
+	<header th:replace="~{fragments :: navbar('location')}"></header>
+
+	<main class="container">
+		<div class="page-head">
+			<h1>Our location</h1>
+			<p class="muted"><i class="fa-solid fa-wifi"></i> An internet connection is needed to load the map.</p>
+		</div>
+		<iframe class="map-frame" title="Map showing our location" loading="lazy" allowfullscreen
+			referrerpolicy="no-referrer-when-downgrade"
+			src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3804.741140114274!2d78.37850687524713!3d17.5198661833897!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb92007eba7e47%3A0x487adfbf49ec01e4!2sSai%20Residency!5e0!3m2!1sen!2sin!4v1793873103023!5m2!1sen!2sin"></iframe>
+		
+	</main>
+
+	<footer th:replace="~{fragments :: footer}"></footer>
+	<th:block th:replace="~{fragments :: foot}"></th:block>
+</body>
+</html>

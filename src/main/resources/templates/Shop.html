@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Shop')}"></head>
+<body>
+	<header th:replace="~{fragments :: navbar('shop')}"></header>
+
+	<main class="container">
+		<div class="page-head">
+			<h1>Hello, <span th:text="${session.userName}">friend</span> <i class="fa-solid fa-mug-hot" style="color:var(--accent)"></i></h1>
+			<p class="muted">Choose a tea, pick the quantity in kilos and order. Your orders are saved under <a th:href="@{/shop/orders}" href="/shop/orders">My Orders</a>.</p>
+		</div>
+
+		<div class="toolbar" th:if="${!#lists.isEmpty(products)}">
+			<div class="search">
+				<i class="fa-solid fa-magnifying-glass"></i>
+				<input type="search" placeholder="Search tea..." aria-label="Search products" data-filter="#shop-grid" />
+			</div>
+			<select aria-label="Sort products" style="width:auto" data-sort-target="#shop-grid">
+				<option value="">Sort: default</option>
+				<option value="price-asc">Price: low to high</option>
+				<option value="price-desc">Price: high to low</option>
+				<option value="name">Name: A to Z</option>
+			</select>
+		</div>
+
+		<div id="shop-grid" class="grid grid-3" th:if="${!#lists.isEmpty(products)}">
+			<article class="card product" th:each="p : ${products}"
+				th:attr="data-search=${p.pname + ' ' + (p.pdescription ?: '')},data-price=${p.pprice},data-name=${p.pname}">
+				<div class="thumb"><img th:src="@{${p.displayImage}}" th:alt="${p.pname}" alt="Tea" loading="lazy" /></div>
+				<div class="body">
+					<h3 th:text="${p.pname}">Tea</h3>
+					<p class="desc" th:text="${p.pdescription}">Description</p>
+					<div class="row">
+						<span class="price">&#8377; <span th:text="${#numbers.formatDecimal(p.pprice, 1, 'COMMA', 2, 'POINT')}">0</span> <small>/ kg</small></span>
+						<button type="button" class="btn btn-sm" data-order th:attr="data-id=${p.pid},data-name=${p.pname},data-price=${p.pprice}"><i class="fa-solid fa-cart-plus"></i> Order</button>
+					</div>
+				</div>
+			</article>
+		</div>
+		<div class="empty" data-empty="#shop-grid" hidden><i class="fa-solid fa-magnifying-glass"></i><p>No product matches your search.</p></div>
+		<div class="empty" th:if="${#lists.isEmpty(products)}"><i class="fa-solid fa-box-open"></i><p>No products are available right now.</p></div>
+	</main>
+
+	<!-- Order pop-up -->
+	<div class="modal-backdrop" id="order-modal">
+		<form class="modal card" th:action="@{/shop/order}" method="post" action="/shop/order" role="dialog" aria-modal="true" aria-labelledby="order-name">
+			<button type="button" class="icon-btn modal-close" data-close aria-label="Close">&#10005;</button>
+			<h3 id="order-name">Product</h3>
+			<p class="muted" id="order-price"></p>
+			<input type="hidden" name="productId" id="order-product-id" />
+			<label for="order-qty">Quantity (kg)</label>
+			<div class="qty">
+				<button type="button" id="qty-minus" aria-label="Decrease">&minus;</button>
+				<input type="number" id="order-qty" name="quantity" min="1" max="1000" step="1" value="1" required />
+				<button type="button" id="qty-plus" aria-label="Increase">+</button>
+			</div>
+			<div class="total-box"><span>Total</span><strong id="order-total">&#8377; 0.00</strong></div>
+			<div class="modal-actions">
+				<button type="button" class="btn btn-ghost" data-close>Cancel</button>
+				<button type="submit" class="btn"><i class="fa-solid fa-check"></i> Place order</button>
+			</div>
+		</form>
+	</div>
+
+	<footer th:replace="~{fragments :: footer}"></footer>
+	<th:block th:replace="~{fragments :: foot}"></th:block>
+</body>
+</html>

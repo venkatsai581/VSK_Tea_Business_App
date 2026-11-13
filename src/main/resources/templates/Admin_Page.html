@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Admin dashboard')}"></head>
+<body>
+	<header th:replace="~{fragments :: navbar('admin')}"></header>
+
+	<main class="container">
+		<div class="page-head">
+			<h1>Dashboard</h1>
+			<p class="muted">Signed in as <strong th:text="${session.adminName}">Admin</strong>. Manage products, customers, admins and orders.</p>
+		</div>
+
+		<!-- summary numbers -->
+		<div class="grid stats">
+			<div class="card stat"><div class="ico"><i class="fa-solid fa-indian-rupee-sign"></i></div><div><div class="num" th:attr="data-count=${revenue}" data-money>0</div><div class="lbl">Revenue (not cancelled)</div></div></div>
+			<div class="card stat"><div class="ico"><i class="fa-solid fa-receipt"></i></div><div><div class="num" th:attr="data-count=${#lists.size(orders)}">0</div><div class="lbl">Orders</div></div></div>
+			<div class="card stat"><div class="ico"><i class="fa-solid fa-hourglass-half"></i></div><div><div class="num" th:attr="data-count=${pending}">0</div><div class="lbl">Waiting for delivery</div></div></div>
+			<div class="card stat"><div class="ico"><i class="fa-solid fa-mug-hot"></i></div><div><div class="num" th:attr="data-count=${#lists.size(products)}">0</div><div class="lbl">Products</div></div></div>
+			<div class="card stat"><div class="ico"><i class="fa-solid fa-users"></i></div><div><div class="num" th:attr="data-count=${#lists.size(users)}">0</div><div class="lbl">Customers</div></div></div>
+		</div>
+
+		<div class="tabs scroll" role="tablist" data-tabs data-tabs-hash aria-label="Manage">
+			<button type="button" role="tab" id="t-orders" aria-controls="orders" aria-selected="true"><i class="fa-solid fa-receipt"></i> Orders</button>
+			<button type="button" role="tab" id="t-products" aria-controls="products" aria-selected="false"><i class="fa-solid fa-mug-hot"></i> Products</button>
+			<button type="button" role="tab" id="t-users" aria-controls="users" aria-selected="false"><i class="fa-solid fa-users"></i> Customers</button>
+			<button type="button" role="tab" id="t-admins" aria-controls="admins" aria-selected="false"><i class="fa-solid fa-user-shield"></i> Admins</button>
+		</div>
+
+		<!-- ORDERS -->
+		<section id="orders" role="tabpanel" aria-labelledby="t-orders">
+			<div class="panel-head">
+				<h2>Orders</h2>
+				<div class="panel-tools">
+					<div class="search"><i class="fa-solid fa-magnifying-glass"></i><input type="search" placeholder="Search orders..." aria-label="Search orders" data-filter="#orders-body" /></div>
+				</div>
+			</div>
+			<div class="table-wrap">
+				<table class="stack">
+					<thead>
+						<tr>
+							<th data-sort="number">#</th>
+							<th data-sort>Customer</th>
+							<th data-sort>Product</th>
+							<th data-sort="number">Qty (kg)</th>
+							<th data-sort="number">Total</th>
+							<th data-sort>Date</th>
+							<th data-sort>Status</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="orders-body">
+						<tr th:each="o : ${orders}" th:attr="data-search=${'' + o.oId + ' ' + o.oName + ' ' + (o.user != null ? o.user.uname + ' ' + o.user.uemail : '') + ' ' + o.status}">
+							<td data-label="#" th:text="${o.oId}">1</td>
+							<td data-label="Customer">
+								<span th:text="${o.user != null ? o.user.uname : '(deleted user)'}">Name</span><br />
+								<small class="muted" th:text="${o.user != null ? o.user.uemail : ''}">email</small>
+							</td>
+							<td data-label="Product" th:text="${o.oName}">Tea</td>
+							<td data-label="Qty (kg)" th:text="${o.oQuantity}">1</td>
+							<td data-label="Total" th:text="'₹ ' + ${#numbers.formatDecimal(o.totalAmmout, 1, 'COMMA', 2, 'POINT')}" th:attr="data-value=${o.totalAmmout}">0</td>
+							<td data-label="Date" th:text="${#dates.format(o.orderDate, 'dd MMM yyyy, HH:mm')}" th:attr="data-value=${o.orderDate != null ? o.orderDate.time : 0}">-</td>
+							<td data-label="Status">
+								<form th:action="@{/admin/orders/{id}/status(id=${o.oId})}" method="post" data-no-spinner>
+									<select class="inline-select" name="status" aria-label="Order status" data-autosubmit>
+										<option value="PLACED" th:selected="${o.status == 'PLACED'}">Placed</option>
+										<option value="DELIVERED" th:selected="${o.status == 'DELIVERED'}">Delivered</option>
+										<option value="CANCELLED" th:selected="${o.status == 'CANCELLED'}">Cancelled</option>
+									</select>
+								</form>
+							</td>
+							<td class="actions">
+								<form th:action="@{/admin/orders/{id}/delete(id=${o.oId})}" method="post" data-confirm="Delete this order permanently?">
+									<button type="submit" class="btn btn-sm btn-ghost" aria-label="Delete order" style="color:var(--danger)"><i class="fa-solid fa-trash"></i> Delete</button>
+								</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="empty" th:if="${#lists.isEmpty(orders)}"><i class="fa-solid fa-receipt"></i><p>No orders yet.</p></div>
+			<div class="empty" data-empty="#orders-body" hidden><i class="fa-solid fa-magnifying-glass"></i><p>No order matches your search.</p></div>
+		</section>
+
+		<!-- PRODUCTS -->
+		<section id="products" role="tabpanel" aria-labelledby="t-products" hidden>
+			<div class="panel-head">
+				<h2>Products</h2>
+				<div class="panel-tools">
+					<div class="search"><i class="fa-solid fa-magnifying-glass"></i><input type="search" placeholder="Search products..." aria-label="Search products" data-filter="#products-body" /></div>
+					<a class="btn" th:href="@{/admin/products/new}" href="/admin/products/new"><i class="fa-solid fa-plus"></i> Add product</a>
+				</div>
+			</div>
+			<div class="table-wrap">
+				<table class="stack">
+					<thead>
+						<tr><th data-sort="number">#</th><th></th><th data-sort>Name</th><th data-sort="number">Price / kg</th><th>Description</th><th></th></tr>
+					</thead>
+					<tbody id="products-body">
+						<tr th:each="p : ${products}" th:attr="data-search=${p.pname + ' ' + (p.pdescription ?: '')}">
+							<td data-label="#" th:text="${p.pid}">1</td>
+							<td data-label="Image"><img th:src="@{${p.displayImage}}" alt="" style="width:48px;height:48px;object-fit:cover;border-radius:10px" loading="lazy" /></td>
+							<td data-label="Name" th:text="${p.pname}">Tea</td>
+							<td data-label="Price / kg" th:text="'₹ ' + ${#numbers.formatDecimal(p.pprice, 1, 'COMMA', 2, 'POINT')}" th:attr="data-value=${p.pprice}">0</td>
+							<td data-label="Description" th:text="${p.pdescription}" style="max-width:320px">-</td>
+							<td class="actions">
+								<div class="table-actions">
+									<a class="btn btn-sm btn-ghost" th:href="@{/admin/products/{id}/edit(id=${p.pid})}" aria-label="Edit product"><i class="fa-solid fa-pen"></i> Edit</a>
+									<form th:action="@{/admin/products/{id}/delete(id=${p.pid})}" method="post" th:attr="data-confirm='Delete the product &quot;' + ${p.pname} + '&quot;?'">
+										<button type="submit" class="btn btn-sm btn-ghost" aria-label="Delete product" style="color:var(--danger)"><i class="fa-solid fa-trash"></i> Delete</button>
+									</form>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="empty" th:if="${#lists.isEmpty(products)}"><i class="fa-solid fa-mug-hot"></i><p>No products yet. Add your first one.</p></div>
+			<div class="empty" data-empty="#products-body" hidden><i class="fa-solid fa-magnifying-glass"></i><p>No product matches your search.</p></div>
+		</section>
+
+		<!-- CUSTOMERS -->
+		<section id="users" role="tabpanel" aria-labelledby="t-users" hidden>
+			<div class="panel-head">
+				<h2>Customers</h2>
+				<div class="panel-tools">
+					<div class="search"><i class="fa-solid fa-magnifying-glass"></i><input type="search" placeholder="Search customers..." aria-label="Search customers" data-filter="#users-body" /></div>
+					<a class="btn" th:href="@{/admin/users/new}" href="/admin/users/new"><i class="fa-solid fa-plus"></i> Add customer</a>
+				</div>
+			</div>
+			<div class="table-wrap">
+				<table class="stack">
+					<thead>
+						<tr><th data-sort="number">#</th><th data-sort>Name</th><th data-sort>Email</th><th data-sort>Mobile</th><th></th></tr>
+					</thead>
+					<tbody id="users-body">
+						<tr th:each="u : ${users}" th:attr="data-search=${u.uname + ' ' + u.uemail + ' ' + u.unumber}">
+							<td data-label="#" th:text="${u.u_id}">1</td>
+							<td data-label="Name" th:text="${u.uname}">Name</td>
+							<td data-label="Email" th:text="${u.uemail}">email</td>
+							<td data-label="Mobile" th:text="${u.unumber}">0</td>
+							<td class="actions">
+								<div class="table-actions">
+									<a class="btn btn-sm btn-ghost" th:href="@{/admin/users/{id}/edit(id=${u.u_id})}" aria-label="Edit customer"><i class="fa-solid fa-pen"></i> Edit</a>
+									<form th:action="@{/admin/users/{id}/delete(id=${u.u_id})}" method="post" th:attr="data-confirm='Delete ' + ${u.uname} + ' and all of their orders?'">
+										<button type="submit" class="btn btn-sm btn-ghost" aria-label="Delete customer" style="color:var(--danger)"><i class="fa-solid fa-trash"></i> Delete</button>
+									</form>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="empty" th:if="${#lists.isEmpty(users)}"><i class="fa-solid fa-users"></i><p>No customers yet.</p></div>
+			<div class="empty" data-empty="#users-body" hidden><i class="fa-solid fa-magnifying-glass"></i><p>No customer matches your search.</p></div>
+		</section>
+
+		<!-- ADMINS -->
+		<section id="admins" role="tabpanel" aria-labelledby="t-admins" hidden>
+			<div class="panel-head">
+				<h2>Admins</h2>
+				<div class="panel-tools">
+					<div class="search"><i class="fa-solid fa-magnifying-glass"></i><input type="search" placeholder="Search admins..." aria-label="Search admins" data-filter="#admins-body" /></div>
+					<a class="btn" th:href="@{/admin/admins/new}" href="/admin/admins/new"><i class="fa-solid fa-plus"></i> Add admin</a>
+				</div>
+			</div>
+			<div class="table-wrap">
+				<table class="stack">
+					<thead>
+						<tr><th data-sort="number">#</th><th data-sort>Name</th><th data-sort>Email</th><th data-sort>Mobile</th><th></th></tr>
+					</thead>
+					<tbody id="admins-body">
+						<tr th:each="a : ${admins}" th:attr="data-search=${a.adminName + ' ' + a.adminEmail}">
+							<td data-label="#" th:text="${a.adminId}">1</td>
+							<td data-label="Name"><span th:text="${a.adminName}">Name</span> <span class="badge badge-DELIVERED" th:if="${a.adminId == session.adminId}">You</span></td>
+							<td data-label="Email" th:text="${a.adminEmail}">email</td>
+							<td data-label="Mobile" th:text="${a.adminNumber}">0</td>
+							<td class="actions">
+								<div class="table-actions">
+									<a class="btn btn-sm btn-ghost" th:href="@{/admin/admins/{id}/edit(id=${a.adminId})}" aria-label="Edit admin"><i class="fa-solid fa-pen"></i> Edit</a>
+									<form th:if="${a.adminId != session.adminId}" th:action="@{/admin/admins/{id}/delete(id=${a.adminId})}" method="post" th:attr="data-confirm='Delete the admin ' + ${a.adminName} + '?'">
+										<button type="submit" class="btn btn-sm btn-ghost" aria-label="Delete admin" style="color:var(--danger)"><i class="fa-solid fa-trash"></i> Delete</button>
+									</form>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="empty" data-empty="#admins-body" hidden><i class="fa-solid fa-magnifying-glass"></i><p>No admin matches your search.</p></div>
+		</section>
+	</main>
+
+	<footer th:replace="~{fragments :: footer}"></footer>
+	<th:block th:replace="~{fragments :: foot}"></th:block>
+</body>
+</html>

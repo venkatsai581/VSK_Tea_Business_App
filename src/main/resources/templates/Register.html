@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Create account')}"></head>
+<body>
+	<header th:replace="~{fragments :: navbar('login')}"></header>
+
+	<main class="container auth">
+		<div class="card auth-card card-pad">
+			<h1 style="font-size:1.8rem;text-align:center">Create your account</h1>
+			<p class="muted center">It takes less than a minute.</p>
+
+			<form th:action="@{/register}" th:object="${form}" method="post" action="/register" novalidate>
+				<div class="field">
+					<label for="uname">Full name</label>
+					<input type="text" id="uname" th:field="*{uname}" th:classappend="${#fields.hasErrors('uname')} ? 'invalid'" placeholder="Your name" autocomplete="name" required />
+					<span class="field-error" th:if="${#fields.hasErrors('uname')}" th:errors="*{uname}"></span>
+				</div>
+				<div class="field">
+					<label for="uemail">Email</label>
+					<input type="email" id="uemail" th:field="*{uemail}" th:classappend="${#fields.hasErrors('uemail')} ? 'invalid'" placeholder="you@example.com" autocomplete="email" required />
+					<span class="field-error" th:if="${#fields.hasErrors('uemail')}" th:errors="*{uemail}"></span>
+				</div>
+				<div class="field">
+					<label for="unumber">Mobile number</label>
+					<input type="tel" id="unumber" th:field="*{unumber}" th:classappend="${#fields.hasErrors('unumber')} ? 'invalid'" placeholder="10 digit number" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" autocomplete="tel" required />
+					<span class="field-error" th:if="${#fields.hasErrors('unumber')}" th:errors="*{unumber}"></span>
+				</div>
+				<div class="field">
+					<label for="upassword">Password</label>
+					<div class="password-wrap">
+						<input type="password" id="upassword" th:field="*{upassword}" th:classappend="${#fields.hasErrors('upassword')} ? 'invalid'" placeholder="At least 6 characters" minlength="6" maxlength="64" autocomplete="new-password" data-strength="#strength" data-match-source required />
+						<button type="button" data-toggle-password aria-label="Show password">Show</button>
+					</div>
+					<div class="strength" id="strength"><span></span></div>
+					<span class="field-error" th:if="${#fields.hasErrors('upassword')}" th:errors="*{upassword}"></span>
+				</div>
+				<div class="field">
+					<label for="confirmPassword">Confirm password</label>
+					<input type="password" id="confirmPassword" name="confirmPassword" th:classappend="${confirmError != null} ? 'invalid'" placeholder="Type it again" autocomplete="new-password" data-match-target required />
+					<span class="hint" id="match-hint"></span>
+					<span class="field-error" th:if="${confirmError}" th:text="${confirmError}"></span>
+				</div>
+				<button type="submit" class="btn btn-block">Create account</button>
+				<p class="center muted" style="margin:1rem 0 0">Already registered? <a th:href="@{/login}" href="/login">Log in</a></p>
+			</form>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments :: footer}"></footer>
+	<th:block th:replace="~{fragments :: foot}"></th:block>
+</body>
+</html>

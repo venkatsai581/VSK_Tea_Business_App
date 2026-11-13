@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!-- Shared page pieces: <head>, navigation bar, footer and the toast/script block. -->
+<head th:fragment="head(title)">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title th:text="${title} + ' | VSK Tea'">VSK Tea</title>
+	<script>
+		/* apply the saved theme before the page paints (no flash) */
+		(function () {
+			var t = null;
+			try { t = localStorage.getItem('theme'); } catch (e) { }
+			if (!t && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) { t = 'dark'; }
+			document.documentElement.setAttribute('data-theme', t || 'light');
+		})();
+	</script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+	<link rel="stylesheet" th:href="@{/css/app.css}" href="/css/app.css" />
+</head>
+
+<body>
+	<header class="nav" th:fragment="navbar(active)">
+		<div class="container nav-inner">
+			<a class="brand" th:href="@{/home}" href="/home">
+				<img th:src="@{/Images/logo-color.png}" src="/Images/logo-color.png" alt="" />
+				<span>VSK Tea</span>
+			</a>
+
+			<nav class="nav-links" id="nav-links" aria-label="Main">
+				<a th:href="@{/home}" th:classappend="${active == 'home'} ? 'active'" href="/home">Home</a>
+				<a th:href="@{/products}" th:classappend="${active == 'products'} ? 'active'" href="/products">Products</a>
+				<a th:href="@{/location}" th:classappend="${active == 'location'} ? 'active'" href="/location">Locate Us</a>
+				<a th:href="@{/about}" th:classappend="${active == 'about'} ? 'active'" href="/about">About</a>
+
+				<!-- logged-in customer -->
+				<th:block th:if="${session.userId != null}">
+					<a th:href="@{/shop}" th:classappend="${active == 'shop'} ? 'active'" href="/shop"><i class="fa-solid fa-store"></i> Shop</a>
+					<a th:href="@{/shop/orders}" th:classappend="${active == 'orders'} ? 'active'" href="/shop/orders"><i class="fa-solid fa-receipt"></i> My Orders</a>
+					<a th:href="@{/shop/profile}" th:classappend="${active == 'profile'} ? 'active'" href="/shop/profile"><i class="fa-solid fa-user"></i> <span th:text="${session.userName}">Me</span></a>
+				</th:block>
+
+				<!-- logged-in admin -->
+				<a th:if="${session.adminId != null}" th:href="@{/admin/services}" th:classappend="${active == 'admin'} ? 'active'" href="/admin/services"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+
+				<!-- logged out -->
+				<a th:if="${session.userId == null and session.adminId == null}" th:href="@{/login}" th:classappend="${active == 'login'} ? 'active'" href="/login"><i class="fa-solid fa-right-to-bracket"></i> Log in</a>
+
+				<form th:if="${session.userId != null or session.adminId != null}" th:action="@{/logout}" method="post" action="/logout">
+					<button type="submit" class="link" data-no-spinner><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
+				</form>
+			</nav>
+
+			<div class="nav-right">
+				<button type="button" class="icon-btn" id="theme-toggle" aria-label="Switch theme">&#127769;</button>
+				<button type="button" class="icon-btn nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">&#9776;</button>
+			</div>
+		</div>
+	</header>
+
+	<footer class="footer" th:fragment="footer">
+		<div class="container">
+			<span>&copy; VSK Tea &mdash; Sai Food &amp; Beverages</span>
+			<span><a th:href="@{/about}" href="/about">Contact</a> &middot; <a th:href="@{/location}" href="/location">Find us</a></span>
+		</div>
+	</footer>
+
+	<th:block th:fragment="foot">
+		<div id="toasts" class="toasts" aria-live="polite"></div>
+		<span id="toast-data" hidden th:attr="data-message=${toast},data-type=${toastType}"></span>
+		<script th:src="@{/js/app.js}" src="/js/app.js"></script>
+	</th:block>
+</body>
+
+</html>

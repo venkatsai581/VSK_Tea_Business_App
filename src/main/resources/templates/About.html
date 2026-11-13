@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('About')}"></head>
+<body>
+	<header th:replace="~{fragments :: navbar('about')}"></header>
+
+	<main class="container">
+		<div class="page-head">
+			<h1>About us</h1>
+			<p class="muted">Who packs your tea, and how to reach us.</p>
+		</div>
+		<div class="grid about-grid">
+			<section class="card card-pad reveal">
+				<h3>Repacked &amp; packed by</h3>
+				<h2 style="color:var(--primary-strong)">sai Food &amp; Beverages</h2>
+				<p class="muted" style="margin:0">Sai Residency,Flat no.402,Road no.2, Bandari Layout <br />Near Lilliput High School,<br />Hyderabad - 500090, India.</p>
+			</section>
+			<section class="card card-pad reveal">
+				<h3>Get in touch</h3>
+				<ul class="contact-list">
+					<li><i class="fa-brands fa-instagram"></i> <span>Venkat</span></li>
+					<li><i class="fa-solid fa-phone"></i> <a href="tel:+918885906728">+91-8885906728</a></li>
+					<li><i class="fa-solid fa-envelope"></i> <a href="mailto:kethavenkat04@gmail.com">kethavenkat04@gmail.com</a></li>
+				</ul>
+			</section>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments :: footer}"></footer>
+	<th:block th:replace="~{fragments :: foot}"></th:block>
+</body>
+</html>

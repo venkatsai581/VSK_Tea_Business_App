@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Products')}"></head>
+<body>
+	<header th:replace="~{fragments :: navbar('products')}"></header>
+
+	<main class="container">
+		<div class="page-head">
+			<h1>Our products</h1>
+			<p class="muted">Search, sort and pick your favourite tea.</p>
+		</div>
+
+		<div class="toolbar" th:if="${!#lists.isEmpty(products)}">
+			<div class="search">
+				<i class="fa-solid fa-magnifying-glass"></i>
+				<input type="search" placeholder="Search tea..." aria-label="Search products" data-filter="#product-grid" />
+			</div>
+			<select aria-label="Sort products" style="width:auto" data-sort-target="#product-grid">
+				<option value="">Sort: default</option>
+				<option value="price-asc">Price: low to high</option>
+				<option value="price-desc">Price: high to low</option>
+				<option value="name">Name: A to Z</option>
+			</select>
+		</div>
+
+		<div id="product-grid" class="grid grid-3" th:if="${!#lists.isEmpty(products)}">
+			<article class="card product" th:each="p : ${products}"
+				th:attr="data-search=${p.pname + ' ' + (p.pdescription ?: '')},data-price=${p.pprice},data-name=${p.pname}">
+				<div class="thumb"><img th:src="@{${p.displayImage}}" th:alt="${p.pname}" alt="Tea" loading="lazy" /></div>
+				<div class="body">
+					<h3 th:text="${p.pname}">Tea</h3>
+					<p class="desc" th:text="${p.pdescription}">Description</p>
+					<div class="row">
+						<span class="price">&#8377; <span th:text="${#numbers.formatDecimal(p.pprice, 1, 'COMMA', 2, 'POINT')}">0</span> <small>/ kg</small></span>
+						<a class="btn btn-sm" th:href="${session.userId != null} ? @{/shop} : @{/login(tab='user')}" href="/login"><i class="fa-solid fa-cart-shopping"></i> Buy now</a>
+					</div>
+				</div>
+			</article>
+		</div>
+
+		<div class="empty" data-empty="#product-grid" hidden><i class="fa-solid fa-magnifying-glass"></i><p>No product matches your search.</p></div>
+		<div class="empty" th:if="${#lists.isEmpty(products)}"><i class="fa-solid fa-box-open"></i><p>No products are available yet. Please check back soon.</p></div>
+	</main>
+
+	<footer th:replace="~{fragments :: footer}"></footer>
+	<th:block th:replace="~{fragments :: foot}"></th:block>
+</body>
+</html>

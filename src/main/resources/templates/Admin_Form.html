@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${editing} ? 'Edit admin' : 'Add admin')}"></head>
+<body>
+	<header th:replace="~{fragments :: navbar('admin')}"></header>
+
+	<main class="container">
+		<div class="card card-pad form-card">
+			<h1 style="font-size:1.7rem" th:text="${editing} ? 'Edit admin' : 'Add a new admin'">Add a new admin</h1>
+			<form th:action="${editing} ? @{/admin/admins/{id}(id=${targetId})} : @{/admin/admins}" th:object="${form}" method="post" action="/admin/admins" novalidate>
+				<div class="field">
+					<label for="adminName">Name</label>
+					<input type="text" id="adminName" th:field="*{adminName}" th:classappend="${#fields.hasErrors('adminName')} ? 'invalid'" placeholder="Full name" required />
+					<span class="field-error" th:if="${#fields.hasErrors('adminName')}" th:errors="*{adminName}"></span>
+				</div>
+				<div class="field">
+					<label for="adminEmail">Email</label>
+					<input type="email" id="adminEmail" th:field="*{adminEmail}" th:classappend="${#fields.hasErrors('adminEmail')} ? 'invalid'" placeholder="admin@example.com" required />
+					<span class="field-error" th:if="${#fields.hasErrors('adminEmail')}" th:errors="*{adminEmail}"></span>
+				</div>
+				<div class="field">
+					<label for="adminNumber">Mobile number</label>
+					<input type="tel" id="adminNumber" th:field="*{adminNumber}" th:classappend="${#fields.hasErrors('adminNumber')} ? 'invalid'" placeholder="10 digit number" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" required />
+					<span class="field-error" th:if="${#fields.hasErrors('adminNumber')}" th:errors="*{adminNumber}"></span>
+				</div>
+				<div class="field">
+					<label for="adminPassword">Password</label>
+					<div class="password-wrap">
+						<input type="password" id="adminPassword" th:field="*{adminPassword}" th:classappend="${#fields.hasErrors('adminPassword')} ? 'invalid'" th:placeholder="${editing} ? 'Leave empty to keep the current password' : 'At least 6 characters'" minlength="6" maxlength="64" autocomplete="new-password" data-strength="#strength" th:required="${!editing}" />
+						<button type="button" data-toggle-password aria-label="Show password">Show</button>
+					</div>
+					<div class="strength" id="strength"><span></span></div>
+					<span class="field-error" th:if="${#fields.hasErrors('adminPassword')}" th:errors="*{adminPassword}"></span>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn"><i class="fa-solid fa-floppy-disk"></i> <span th:text="${editing} ? 'Save changes' : 'Add admin'">Save</span></button>
+					<a class="btn btn-ghost" th:href="@{/admin/services#admins}" href="/admin/services#admins">Cancel</a>
+				</div>
+			</form>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments :: footer}"></footer>
+	<th:block th:replace="~{fragments :: foot}"></th:block>
+</body>
+</html>

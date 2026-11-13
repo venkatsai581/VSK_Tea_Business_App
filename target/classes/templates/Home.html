@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Home')}"></head>
+<body>
+	<header th:replace="~{fragments :: navbar('home')}"></header>
+
+	<main>
+		<section class="hero">
+			<video th:src="@{/Videos/teaTree.mp4}" src="/Videos/teaTree.mp4" autoplay muted loop playsinline
+				th:poster="@{/Images/backgroundTea.jpg}" aria-hidden="true"></video>
+			<div class="container hero-inner">
+				<span class="eyebrow">Fresh from the estate</span>
+				<h1>Welcome to VSK Tea</h1>
+				<p>Where quality meets innovation. Explore our range of hand-picked teas, packed fresh and delivered to you.</p>
+				<div class="actions">
+					<a class="btn" th:href="@{/products}" href="/products"><i class="fa-solid fa-mug-hot"></i> Explore products</a>
+					<a class="btn btn-ghost" th:if="${session.userId == null and session.adminId == null}" th:href="@{/register}" href="/register">Create an account</a>
+					<a class="btn btn-ghost" th:if="${session.userId != null}" th:href="@{/shop}" href="/shop">Go to shop</a>
+					<a class="btn btn-ghost" th:if="${session.adminId != null}" th:href="@{/admin/services}" href="/admin/services">Open dashboard</a>
+				</div>
+			</div>
+		</section>
+
+		<section class="section container">
+			<div class="grid features">
+				<div class="card feature reveal"><i class="fa-solid fa-leaf"></i><h3>Hand-picked leaves</h3><p class="muted">Sourced from trusted estates and checked for freshness.</p></div>
+				<div class="card feature reveal"><i class="fa-solid fa-box-open"></i><h3>Packed fresh</h3><p class="muted">Repacked in small batches so the aroma stays locked in.</p></div>
+				<div class="card feature reveal"><i class="fa-solid fa-truck-fast"></i><h3>Order online</h3><p class="muted">Pick your tea, choose the kilos and place the order in seconds.</p></div>
+				<div class="card feature reveal"><i class="fa-solid fa-indian-rupee-sign"></i><h3>Fair prices</h3><p class="muted">Straight from the packer to your cup, with no hidden charges.</p></div>
+			</div>
+		</section>
+
+		<section class="section container" th:if="${!#lists.isEmpty(featured)}" style="padding-top:0">
+			<div class="section-head">
+				<div><span class="eyebrow">Our teas</span><h2>Popular picks</h2></div>
+				<a class="btn btn-ghost" th:href="@{/products}" href="/products">See all products <i class="fa-solid fa-arrow-right"></i></a>
+			</div>
+			<div class="grid grid-3">
+				<article class="card product reveal" th:each="p : ${featured}">
+					<div class="thumb"><img th:src="@{${p.displayImage}}" th:alt="${p.pname}" alt="Tea" loading="lazy" /></div>
+					<div class="body">
+						<h3 th:text="${p.pname}">Tea</h3>
+						<p class="desc" th:text="${p.pdescription}">Description</p>
+						<div class="row">
+							<span class="price">&#8377; <span th:text="${#numbers.formatDecimal(p.pprice, 1, 'COMMA', 2, 'POINT')}">0</span> <small>/ kg</small></span>
+							<a class="btn btn-sm" th:href="${session.userId != null} ? @{/shop} : @{/login(tab='user')}" href="/login">Buy now</a>
+						</div>
+					</div>
+				</article>
+			</div>
+		</section>
+	</main>
+
+	<footer th:replace="~{fragments :: footer}"></footer>
+	<th:block th:replace="~{fragments :: foot}"></th:block>
+</body>
+</html>

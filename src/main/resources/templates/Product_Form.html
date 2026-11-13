@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${editing} ? 'Edit product' : 'Add product')}"></head>
+<body>
+	<header th:replace="~{fragments :: navbar('admin')}"></header>
+
+	<main class="container">
+		<div class="card card-pad form-card">
+			<h1 style="font-size:1.7rem" th:text="${editing} ? 'Edit product' : 'Add a new product'">Add a new product</h1>
+			<form th:action="${editing} ? @{/admin/products/{id}(id=${targetId})} : @{/admin/products}" th:object="${form}" method="post" action="/admin/products" novalidate>
+				<div class="field">
+					<label for="pname">Product name</label>
+					<input type="text" id="pname" th:field="*{pname}" th:classappend="${#fields.hasErrors('pname')} ? 'invalid'" placeholder="e.g. Assam Gold Tea" maxlength="80" required />
+					<span class="field-error" th:if="${#fields.hasErrors('pname')}" th:errors="*{pname}"></span>
+				</div>
+				<div class="field">
+					<label for="pprice">Price per kg (&#8377;)</label>
+					<input type="number" id="pprice" th:field="*{pprice}" th:classappend="${#fields.hasErrors('pprice')} ? 'invalid'" placeholder="0.00" min="0.01" step="0.01" required />
+					<span class="field-error" th:if="${#fields.hasErrors('pprice')}" th:errors="*{pprice}"></span>
+				</div>
+				<div class="field">
+					<label for="pdescription">Description</label>
+					<textarea id="pdescription" th:field="*{pdescription}" th:classappend="${#fields.hasErrors('pdescription')} ? 'invalid'" placeholder="A short description customers will see" maxlength="500"></textarea>
+					<span class="field-error" th:if="${#fields.hasErrors('pdescription')}" th:errors="*{pdescription}"></span>
+				</div>
+				<div class="field">
+					<label for="pimage">Image link <span class="muted" style="font-weight:400">(optional)</span></label>
+					<input type="text" id="pimage" th:field="*{pimage}" th:classappend="${#fields.hasErrors('pimage')} ? 'invalid'" placeholder="https://... or /Images/final.jpg" />
+					<span class="hint">Leave empty to use a default tea picture.</span>
+					<span class="field-error" th:if="${#fields.hasErrors('pimage')}" th:errors="*{pimage}"></span>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn"><i class="fa-solid fa-floppy-disk"></i> <span th:text="${editing} ? 'Save changes' : 'Add product'">Save</span></button>
+					<a class="btn btn-ghost" th:href="@{/admin/services#products}" href="/admin/services#products">Cancel</a>
+				</div>
+			</form>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments :: footer}"></footer>
+	<th:block th:replace="~{fragments :: foot}"></th:block>
+</body>
+</html>
